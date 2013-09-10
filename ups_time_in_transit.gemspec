@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ups_time_in_transit}
-  s.version = "0.1.1"
+  s.version = "0.1.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Joe Stelmach"]
-  s.cert_chain = ["/Users/joe/workspace/personal/gem-public_cert.pem"]
+  #s.cert_chain = ["/Users/joe/workspace/personal/gem-public_cert.pem"]
   s.date = %q{2010-06-01}
   s.description = %q{Provides an easy to use interface to the UPS time in transit API}
   s.email = %q{joestelmach @nospam@ gmail.com}
@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{ups_time_in_transit}
   s.rubygems_version = %q{1.3.7}
-  s.signing_key = %q{/Users/joe/workspace/personal/gem-private_key.pem}
+  #s.signing_key = %q{/Users/joe/workspace/personal/gem-private_key.pem}
   s.summary = %q{Provides an easy to use interface to the UPS time in transit API}
 
   if s.respond_to? :specification_version then
