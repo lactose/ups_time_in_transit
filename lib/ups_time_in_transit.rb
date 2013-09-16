@@ -17,8 +17,8 @@ module Joestelmach
       DEFAULT_UNIT_OF_MEASUREMENT = 'LBS'
       DEFAULT_CURRENCY_CODE = 'USD'
 
-      # Creates a TimeInTransit instance based on the given hash of access 
-      # options The following access options are available and are required 
+      # Creates a TimeInTransit instance based on the given hash of access
+      # options The following access options are available and are required
       # unless a default value is specified:
       #
       # [<tt>:url</tt>]
@@ -34,9 +34,9 @@ module Joestelmach
       #   Your ups password
       #
       # [<tt>:order_cutoff_time</tt>]
-      #   Your own arbitrary cutoff time that is some time before the actual ups cutoff 
-      #   time.  Requests made after this time will use the following day as the send 
-      #   date (or the following monday if the request is made on a weekend or on a 
+      #   Your own arbitrary cutoff time that is some time before the actual ups cutoff
+      #   time.  Requests made after this time will use the following day as the send
+      #   date (or the following monday if the request is made on a weekend or on a
       #   friday after this time.)
       #
       # [<tt>:sender_city</tt>]
@@ -52,18 +52,18 @@ module Joestelmach
       #   The country you are shipping from (defaults to 'US')
       #
       # [<tt>:retry_count</tt>]
-      #   The number of times you would like to retry when a connection 
+      #   The number of times you would like to retry when a connection
       #   fails (defaults to 3)
       #
       # [<tt>:timeout</tt>]
-      #   The number of seconds you would like to wait for a response before 
+      #   The number of seconds you would like to wait for a response before
       #   giving up (defaults to 30)
       #
       def initialize(access_options)
         @order_cutoff_time = access_options[:order_cutoff_time] || DEFAULT_CUTOFF_TIME
         @url = access_options[:url]
-        @timeout = access_options[:timeout] || DEFAULT_TIMEOUT 
-        @retry_count = access_options[:retry_count] || DEFAULT_CUTOFF_TIME 
+        @timeout = access_options[:timeout] || DEFAULT_TIMEOUT
+        @retry_count = access_options[:retry_count] || DEFAULT_CUTOFF_TIME
 
         @access_xml = generate_xml({
           :AccessRequest => {
@@ -109,7 +109,6 @@ module Joestelmach
       # An error will be raised if the request is unsuccessful.
       #
       def request(options)
-        
         # build our request xml
         pickup_date = calculate_pickup_date
         options[:pickup_date] = pickup_date.strftime('%Y%m%d')
@@ -118,7 +117,7 @@ module Joestelmach
         # attempt the request in a timeout
         delivery_dates = {}
         attempts = 0
-        begin 
+        begin
           Timeout.timeout(@timeout) do
             response = send_request(@url, xml)
             delivery_dates = response_to_map(response)
@@ -139,9 +138,9 @@ module Joestelmach
         delivery_dates
       end
 
-      private 
+      private
 
-      # calculates the next available pickup date based on the current time and the 
+      # calculates the next available pickup date based on the current time and the
       # configured order cutoff time
       def calculate_pickup_date
         now = Time.now
@@ -235,14 +234,14 @@ module Joestelmach
 
       # converts the given raw xml response to a map of local service codes
       # to estimated delivery dates
-      def response_to_map(response) 
+      def response_to_map(response)
         response_doc = REXML::Document.new(response)
         response_code = response_doc.elements['//ResponseStatusCode'].text.to_i
         raise "Invalid response from ups:\n#{response_doc.to_s}" if(!response_code || response_code != 1)
 
         service_codes_to_delivery_dates = {}
         response_code = response_doc.elements.each('//ServiceSummary') do |service_element|
-          service_code = service_element.elements['Service/Code'].text
+          service_code = service_element.elements['Service/Description'].text
           if(service_code)
             date_string = service_element.elements['EstimatedArrival/Date'].text
             time_string = service_element.elements['EstimatedArrival/Time'].text
