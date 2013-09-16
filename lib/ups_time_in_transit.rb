@@ -15,6 +15,7 @@ module Joestelmach
       DEFAULT_RETRY_COUNT = 3
       DEFAULT_COUNTRY_CODE = 'US'
       DEFAULT_UNIT_OF_MEASUREMENT = 'LBS'
+      DEFAULT_CURRENCY_CODE = 'USD'
 
       # Creates a TimeInTransit instance based on the given hash of access 
       # options The following access options are available and are required 
@@ -179,6 +180,9 @@ module Joestelmach
               }
             },
             :TotalPackagesInShipment => options[:total_packages],
+            :InvoiceLineTotal => {
+              :CurrencyCode => options[:currency] || DEFAULT_CURRENCY_CODE,
+              :MonetaryValue => options[:total_price],
             :ShipmentWeight => {
               :UnitOfMeasurement => {
                 :Code => options[:unit_of_measurement] || DEFAULT_UNIT_OF_MEASUREMENT
