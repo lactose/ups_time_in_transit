@@ -183,6 +183,7 @@ module Joestelmach
             :InvoiceLineTotal => {
               :CurrencyCode => options[:currency] || DEFAULT_CURRENCY_CODE,
               :MonetaryValue => options[:total_price],
+            },
             :ShipmentWeight => {
               :UnitOfMeasurement => {
                 :Code => options[:unit_of_measurement] || DEFAULT_UNIT_OF_MEASUREMENT
