@@ -232,10 +232,25 @@ module Joestelmach
         response.code == '200' ? response.body : response.error!
       end
 
+      # Prevents an empty response if there are more than one city in the
+      # response
+      def get_first_city(response_doc)
+        return false unless transit_list = response_doc.elements['/TimeInTransitResponse/TransitToList']
+
+        transit_list.elements.each('Candidate') do |candidate|
+          return candidate.elements['AddressArtifactFormat/PoliticalDivision2'].text
+        end
+      end
+
       # converts the given raw xml response to a map of local service codes
       # to estimated delivery dates
       def response_to_map(response)
         response_doc = REXML::Document.new(response)
+
+        city = get_first_city(response_doc)
+
+        return city unless city.blank?
+
         response_code = response_doc.elements['//ResponseStatusCode'].text.to_i
         raise "Invalid response from ups:\n#{response_doc.to_s}" if(!response_code || response_code != 1)
 
