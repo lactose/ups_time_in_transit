@@ -64,6 +64,7 @@ module Joestelmach
         @url = access_options[:url]
         @timeout = access_options[:timeout] || DEFAULT_TIMEOUT
         @retry_count = access_options[:retry_count] || DEFAULT_CUTOFF_TIME
+        @prevent_multiple = access_options[:prevent_multiple]
 
         @access_xml = generate_xml({
           :AccessRequest => {
@@ -247,9 +248,10 @@ module Joestelmach
       def response_to_map(response)
         response_doc = REXML::Document.new(response)
 
-        city = get_first_city(response_doc)
-
-        return city unless city.blank?
+        if @prevent_multiple
+          city = get_first_city(response_doc)
+          return city unless city.blank?
+        end
 
         response_code = response_doc.elements['//ResponseStatusCode'].text.to_i
         raise "Invalid response from ups:\n#{response_doc.to_s}" if(!response_code || response_code != 1)
