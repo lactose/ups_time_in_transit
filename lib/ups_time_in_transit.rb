@@ -147,16 +147,16 @@ module Joestelmach
         now = Time.now
         day_of_week = now.strftime('%w').to_i
         in_weekend = [6,0].include?(day_of_week)
-        in_friday_after_cutoff = day_of_week == 5 and now.hour > @order_cutoff_time
+        in_friday_after_cutoff = day_of_week == 5 && now.hour >= @order_cutoff_time
 
         # If we're in a weekend (6 is Sat, 0 is Sun,) or we're in Friday after
         # the cutoff time, then our ship date will move
-        if(in_weekend or in_friday_after_cutoff)
+        if(in_weekend || in_friday_after_cutoff)
           pickup_date = now.next_week
 
         # if we're in another weekday but after the cutoff time, our ship date
         # moves to tomorrow
-        elsif(now.hour > @order_cutoff_time)
+        elsif(now.hour >= @order_cutoff_time)
           pickup_date = now.tomorrow
         else
           pickup_date = now
