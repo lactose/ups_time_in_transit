@@ -111,7 +111,7 @@ module Joestelmach
       #
       def request(options)
         # build our request xml
-        pickup_date = calculate_pickup_date + 1.day
+        pickup_date = calculate_pickup_date
         options[:pickup_date] = pickup_date.strftime('%Y%m%d')
         xml = @access_xml + generate_xml(build_transit_attributes(options))
 
