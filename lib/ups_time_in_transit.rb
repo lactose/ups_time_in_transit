@@ -153,18 +153,21 @@ module Joestelmach
 
         # If we're in a weekend (6 is Sat, 0 is Sun,) or we're in Friday after
         # the cutoff time, then our ship date will move
-        if now.to_date.in?(blackout_dates)
-          # if today is a blackout date, try again with tomorrow
-          return calculate_pickup_date(now.tomorrow, options)
-        elsif(in_weekend || in_friday_after_cutoff)
+        pickup = if(in_weekend || in_friday_after_cutoff)
           pickup_date = now.next_week
-
         # if we're in another weekday but after the cutoff time, our ship date
         # moves to tomorrow
         elsif(now.hour >= @order_cutoff_time)
           pickup_date = now.tomorrow
         else
           pickup_date = now
+        end
+
+        if pickup.to_date.in?(blackout_dates)
+          # if pickup is a blackout date, try again with tomorrow
+          return calculate_pickup_date(pickup.tomorrow, options)
+        else
+          return pickup
         end
       end
 
