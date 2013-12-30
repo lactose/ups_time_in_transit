@@ -147,13 +147,13 @@ module Joestelmach
         return options[:pickup_date] if options[:pickup_date].present?
 
         day_of_week = now.strftime('%w').to_i
-        blackout_dates = options[:blackout_dates]
+        blackout_dates = options[:blackout_dates] || []
         in_weekend = [6,0].include?(day_of_week)
         in_friday_after_cutoff = day_of_week == 5 && now.hour >= @order_cutoff_time
 
         # If we're in a weekend (6 is Sat, 0 is Sun,) or we're in Friday after
         # the cutoff time, then our ship date will move
-        if now.to_date.in?(options[:blackout_dates])
+        if now.to_date.in?(blackout_dates)
           # if today is a blackout date, try again with tomorrow
           return calculate_pickup_date(now.tomorrow, options)
         elsif(in_weekend || in_friday_after_cutoff)
