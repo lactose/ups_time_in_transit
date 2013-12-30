@@ -111,7 +111,7 @@ module Joestelmach
       #
       def request(options)
         # build our request xml
-        pickup_date = calculate_pickup_date
+        pickup_date = calculate_pickup_date(Time.now, options)
         options[:pickup_date] = pickup_date.strftime('%Y%m%d')
         xml = @access_xml + generate_xml(build_transit_attributes(options))
 
@@ -143,15 +143,20 @@ module Joestelmach
 
       # calculates the next available pickup date based on the current time and the
       # configured order cutoff time
-      def calculate_pickup_date
-        now = Time.now
+      def calculate_pickup_date(now = Time.now, options = {})
+        return options[:pickup_date] if options[:pickup_date].present?
+
         day_of_week = now.strftime('%w').to_i
+        blackout_dates = options[:blackout_dates]
         in_weekend = [6,0].include?(day_of_week)
         in_friday_after_cutoff = day_of_week == 5 && now.hour >= @order_cutoff_time
 
         # If we're in a weekend (6 is Sat, 0 is Sun,) or we're in Friday after
         # the cutoff time, then our ship date will move
-        if(in_weekend || in_friday_after_cutoff)
+        if now.to_date.in?(options[:blackout_dates])
+          # if today is a blackout date, try again with tomorrow
+          return calculate_pickup_date(now.tomorrow, options)
+        elsif(in_weekend || in_friday_after_cutoff)
           pickup_date = now.next_week
 
         # if we're in another weekday but after the cutoff time, our ship date
